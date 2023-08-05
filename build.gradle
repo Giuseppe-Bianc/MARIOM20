@@ -6,15 +6,21 @@ plugins {
 group = 'org.dersbian'
 version = '1.0-SNAPSHOT'
 
-project.ext.lwjglVersion = "3.2.3"
+project.ext.lwjglVersion = "3.3.2"
 project.ext.jomlVersion = "1.10.5"
 project.ext.lwjglNatives = "natives-windows"
+project.ext.imguiVersion = "1.86.10"
 
 repositories {
     mavenCentral()
 }
 
+
 dependencies {
+    implementation "io.github.spair:imgui-java-binding:$imguiVersion"
+    implementation "io.github.spair:imgui-java-lwjgl3:$imguiVersion"
+
+    implementation "io.github.spair:imgui-java-natives-windows:$imguiVersion"
     implementation 'org.jetbrains:annotations:24.0.1'
     testImplementation platform('org.junit:junit-bom:5.9.2')
     testImplementation 'org.junit.jupiter:junit-jupiter:5.9.2'

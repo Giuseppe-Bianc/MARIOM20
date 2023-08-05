@@ -1,27 +1,44 @@
 package jade;
 
+import imgui.ImGui;
+import imgui.ImGuiIO;
+import imgui.flag.ImGuiConfigFlags;
+import imgui.gl3.ImGuiImplGl3;
+import imgui.glfw.ImGuiImplGlfw;
 import org.lwjgl.Version;
 import org.lwjgl.glfw.GLFWErrorCallback;
+import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
+import org.lwjgl.system.MemoryStack;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import util.Time;
+
+import java.nio.IntBuffer;
 import java.util.Objects;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL46.*;
+import static org.lwjgl.system.MemoryStack.stackPush;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
 public class Window { // NOSONAR: java:S6548
-    public static final Logger logger = LoggerFactory.getLogger(Window.class);
+    private static final Logger logger = LoggerFactory.getLogger(Window.class);
+    private static Scene currentScene;
+    private final ImGuiImplGlfw imGuiGlfw = new ImGuiImplGlfw();
+    private final ImGuiImplGl3 imGuiGl3 = new ImGuiImplGl3();
     private final int width;
     private final int height;
     private final String title;
+    public float r, g, b, a;
+    private ImGuiLayer imguiLayer;
+    private String glslVersion = null;
     private long glfwWindow;
-    private float r, g, b, a;
     private boolean fadeToBlack = false;
 
-    private Window() {
+    private Window(ImGuiLayer imguiLayer) {
+        this.imguiLayer = imguiLayer;
         this.width = 1152;
         this.height = 648;
         this.title = "Mario";
@@ -30,8 +47,28 @@ public class Window { // NOSONAR: java:S6548
         this.g = 1;
         this.a = 1;
     }
+
+    public static void changeScene(int newScene) {
+        switch (newScene) {
+            case 0 -> {
+                currentScene = new LevelEditorScene();
+
+                //currentScene.init();
+            }
+            case 1 -> currentScene = new LevelScene();
+            default -> {
+                assert false : "Unknown scene '" + newScene + "'";
+            }
+        }
+    }
+
     public static Window get() {
-        return WindowHolder.WINDOW;
+        return WindowHolder.INSTANCE;
+    }
+
+    public static Window get(ImGuiLayer imguiLayer) {
+        WindowHolder.newInstance(imguiLayer);
+        return WindowHolder.INSTANCE;
     }
 
     public void run() {
@@ -39,6 +76,9 @@ public class Window { // NOSONAR: java:S6548
 
         init();
         loop();
+        imGuiGl3.dispose();
+        imGuiGlfw.dispose();
+        ImGui.destroyContext();
         glfwFreeCallbacks(glfwWindow);
         glfwDestroyWindow(glfwWindow);
 
@@ -54,7 +94,9 @@ public class Window { // NOSONAR: java:S6548
         if (!glfwInit())
             throw new IllegalStateException("Unable to initialize GLFW");
 
-        glfwDefaultWindowHints(); // optional, the current window hints are already the default
+        glslVersion = "#version 330";
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE); // the window will stay hidden after creation
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE); // the window will be resizable
 
@@ -63,6 +105,26 @@ public class Window { // NOSONAR: java:S6548
         if (glfwWindow == NULL) {
             throw new IllegalStateException("Failed to create the GLFW window.");
         }
+
+        try ( MemoryStack stack = stackPush() ) {
+            IntBuffer pWidth = stack.mallocInt(1); // int*
+            IntBuffer pHeight = stack.mallocInt(1); // int*
+
+            // Get the window size passed to glfwCreateWindow
+            glfwGetWindowSize(glfwWindow , pWidth, pHeight);
+
+            // Get the resolution of the primary monitor
+            GLFWVidMode vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+
+            // Center the window
+            glfwSetWindowPos(
+                    glfwWindow ,
+                    (vidmode.width() - pWidth.get(0)) / 2,
+                    (vidmode.height() - pHeight.get(0)) / 2
+            );
+        } // the stack frame is popped automatically
+        logger.info("centering the window");
+
 
         glfwSetCursorPosCallback(glfwWindow, MouseListener::mousePosCallback);
         glfwSetMouseButtonCallback(glfwWindow, MouseListener::mouseButtonCallback);
@@ -83,9 +145,19 @@ public class Window { // NOSONAR: java:S6548
         // creates the GLCapabilities instance and makes the OpenGL
         // bindings available for use.
         GL.createCapabilities();
+        Window.changeScene(0);
+        ImGui.createContext();
+        ImGuiIO io = ImGui.getIO();
+        io.addConfigFlags(ImGuiConfigFlags.ViewportsEnable);
+        imGuiGlfw.init(glfwWindow, true);
+        imGuiGl3.init(glslVersion);
+
     }
 
     public void loop() {
+        float beginTime = Time.getTime();
+        float endTime;
+        float dt = -1.0f;
         while (!glfwWindowShouldClose(glfwWindow)) {
             // Poll events
             glfwPollEvents();
@@ -93,22 +165,39 @@ public class Window { // NOSONAR: java:S6548
             glClearColor(r, g, b, a);
             glClear(GL_COLOR_BUFFER_BIT);
 
-            if (fadeToBlack) {
-                r = Math.max(r - 0.01f, 0);
-                g = Math.max(g - 0.01f, 0);
-                b = Math.max(b - 0.01f, 0);
+            imGuiGlfw.newFrame();
+            ImGui.newFrame();
+
+            imguiLayer.imgui();
+
+            ImGui.render();
+            imGuiGl3.renderDrawData(ImGui.getDrawData());
+
+            if (dt >= 0) {
+                currentScene.update(dt);
             }
 
-            if (KeyListener.isKeyPressed(GLFW_KEY_SPACE)) {
-                fadeToBlack = true;
+            if (ImGui.getIO().hasConfigFlags(ImGuiConfigFlags.ViewportsEnable)) {
+                final long backupWindowPtr = glfwGetCurrentContext();
+                ImGui.updatePlatformWindows();
+                ImGui.renderPlatformWindowsDefault();
+                org.lwjgl.glfw.GLFW.glfwMakeContextCurrent(backupWindowPtr);
             }
 
             glfwSwapBuffers(glfwWindow);
+            endTime = Time.getTime();
+            dt = endTime - beginTime;
+            beginTime = endTime;
         }
     }
 
     private static class WindowHolder {
-        private static final Window WINDOW = new Window();
+        private static Window INSTANCE;
+
+        private static void newInstance(ImGuiLayer imguiLayer) {
+            if (INSTANCE == null) {
+                INSTANCE = new Window(imguiLayer);
+            }
+        }
     }
 }
-

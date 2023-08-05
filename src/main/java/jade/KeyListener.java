@@ -5,16 +5,12 @@ import static org.lwjgl.glfw.GLFW.GLFW_RELEASE;
 
 public class KeyListener {
     private final boolean[] keyPressed = new boolean[350];
-    
+
     private KeyListener() {
     }
-    
+
     public static KeyListener get() {
         return KeyListenerHolder.INSTANCE;
-    }
-    private static class KeyListenerHolder {
-
-        private static final KeyListener INSTANCE = new KeyListener();
     }
 
     public static void keyCallback(long window, int key, int scancode, int action, int mods) {
@@ -27,5 +23,10 @@ public class KeyListener {
 
     public static boolean isKeyPressed(int keyCode) {
         return get().keyPressed[keyCode];
+    }
+
+    private static class KeyListenerHolder {
+
+        private static final KeyListener INSTANCE = new KeyListener();
     }
 }
