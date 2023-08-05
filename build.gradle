@@ -54,4 +54,13 @@ test {
 application {
     // Define the main class for the application.
     mainClass = 'Main'
+    run {
+        // Replace the following line with your desired JVM options
+        jvmArgs = ['-ea',
+                   '-esa',
+                   '-XX:+UnlockExperimentalVMOptions',
+                   '-XX:+UseZGC',
+                   '-XX:+OptimizeStringConcat',
+                   '-XX:+CompactStrings']
+    }
 }
