@@ -52,10 +52,12 @@ public class Window { // NOSONAR: java:S6548
         switch (newScene) {
             case 0 -> {
                 currentScene = new LevelEditorScene();
-
-                //currentScene.init();
+                currentScene.init();
             }
-            case 1 -> currentScene = new LevelScene();
+            case 1 -> {
+                currentScene = new LevelScene();
+                currentScene.init();
+            }
             default -> {
                 assert false : "Unknown scene '" + newScene + "'";
             }
@@ -106,19 +108,19 @@ public class Window { // NOSONAR: java:S6548
             throw new IllegalStateException("Failed to create the GLFW window.");
         }
 
-        try ( MemoryStack stack = stackPush() ) {
+        try (MemoryStack stack = stackPush()) {
             IntBuffer pWidth = stack.mallocInt(1); // int*
             IntBuffer pHeight = stack.mallocInt(1); // int*
 
             // Get the window size passed to glfwCreateWindow
-            glfwGetWindowSize(glfwWindow , pWidth, pHeight);
+            glfwGetWindowSize(glfwWindow, pWidth, pHeight);
 
             // Get the resolution of the primary monitor
             GLFWVidMode vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
 
             // Center the window
             glfwSetWindowPos(
-                    glfwWindow ,
+                    glfwWindow,
                     (vidmode.width() - pWidth.get(0)) / 2,
                     (vidmode.height() - pHeight.get(0)) / 2
             );
@@ -151,7 +153,6 @@ public class Window { // NOSONAR: java:S6548
         io.addConfigFlags(ImGuiConfigFlags.ViewportsEnable);
         imGuiGlfw.init(glfwWindow, true);
         imGuiGl3.init(glslVersion);
-
     }
 
     public void loop() {
