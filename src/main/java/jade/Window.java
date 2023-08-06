@@ -35,7 +35,6 @@ public class Window { // NOSONAR: java:S6548
     private ImGuiLayer imguiLayer;
     private String glslVersion = null;
     private long glfwWindow;
-    private boolean fadeToBlack = false;
 
     private Window(ImGuiLayer imguiLayer) {
         this.imguiLayer = imguiLayer;

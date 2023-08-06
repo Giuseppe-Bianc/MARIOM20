@@ -25,7 +25,7 @@ public class Shader {
     private String fragmentSource;
     private final String filepath;
 
-    public Shader(String filepath) {
+    public Shader(@NotNull String filepath) {
         this.filepath = filepath;
         logger.info("loading file {}", filepath);
         try {
@@ -129,7 +129,7 @@ public class Shader {
         glUseProgram(0);
     }
 
-    public void uploadMat4f(String varName, @NotNull Matrix4f mat4) {
+    public void uploadMat4f(@NotNull String varName, @NotNull Matrix4f mat4) {
         int varLocation = glGetUniformLocation(shaderProgramID, varName);
         FloatBuffer matBuffer = BufferUtils.createFloatBuffer(16);
         mat4.get(matBuffer);
