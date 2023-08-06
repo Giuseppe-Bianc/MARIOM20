@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory;
 
 public class SpriteRenderer extends Component {
     private static final Logger logger = LoggerFactory.getLogger(SpriteRenderer.class);
-    private Vector4f color;
+    private final Vector4f color;
 
     public SpriteRenderer(Vector4f color) {
         this.color = color;
@@ -15,11 +15,12 @@ public class SpriteRenderer extends Component {
 
     @Override
     public void start() {
+        // empty
     }
 
     @Override
     public void update(float dt) {
-
+        // empty
     }
 
     public Vector4f getColor() {

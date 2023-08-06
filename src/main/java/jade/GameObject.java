@@ -8,7 +8,7 @@ import java.util.List;
 
 public class GameObject {
     private static final Logger logger = LoggerFactory.getLogger(GameObject.class);
-    private String name;
+    private final String name;
     private List<Component> components;
     public Transform transform;
 

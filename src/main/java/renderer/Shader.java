@@ -30,7 +30,7 @@ public class Shader {
         this.filepath = filepath;
         logger.info("loading file {}", filepath);
         try {
-            String source = new String(Files.readAllBytes(Paths.get(filepath)), StandardCharsets.UTF_8);
+            String source = Files.readString(Paths.get(filepath));
             String[] splitString = source.split(Costanti.REGEX);
 
             // Find the first pattern after #type 'pattern'
@@ -55,7 +55,7 @@ public class Shader {
                 default -> throw new IOException(String.format("Unexpected token '%s'", secondPattern));
             }
         } catch (IOException e) {
-            logger.error("{0}", e);
+            logger.error(" {0}", e);
             assert false : String.format("Error: Could not open file for shader: '%s'", filepath);
         }
     }

@@ -32,7 +32,7 @@ public class Window { // NOSONAR: java:S6548
     private final int height;
     private final String title;
     public float r, g, b, a;
-    private ImGuiLayer imguiLayer;
+    private final ImGuiLayer imguiLayer;
     private String glslVersion = null;
     private long glfwWindow;
 

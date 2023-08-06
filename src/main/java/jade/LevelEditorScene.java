@@ -11,10 +11,7 @@ public class LevelEditorScene extends Scene {
     public static final Logger logger = LoggerFactory.getLogger(LevelEditorScene.class);
 
     GameObject testObj;
-
-    public LevelEditorScene() {
-
-    }
+    
 
     @Override
     public void init() {
