@@ -1,9 +1,15 @@
 package renderer;
 
+import org.jetbrains.annotations.NotNull;
+import org.joml.Matrix4f;
+import org.lwjgl.BufferUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import util.Costanti;
 
 import java.io.IOException;
+import java.nio.FloatBuffer;;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
@@ -21,34 +27,35 @@ public class Shader {
 
     public Shader(String filepath) {
         this.filepath = filepath;
+        logger.info("loading file {}", filepath);
         try {
-            String source = new String(Files.readAllBytes(Paths.get(filepath)));
-            String[] splitString = source.split("(#type)( )+([a-zA-Z]+)");
+            String source = new String(Files.readAllBytes(Paths.get(filepath)), StandardCharsets.UTF_8);
+            String[] splitString = source.split(Costanti.REGEX);
 
             // Find the first pattern after #type 'pattern'
-            int index = source.indexOf("#type") + 6;
-            int eol = source.indexOf("\r\n", index);
+            int index = source.indexOf(Costanti.HSTYPE) + 6;
+            int eol = source.indexOf(Costanti.CRNL, index);
             String firstPattern = source.substring(index, eol).trim();
 
             // Find the second pattern after #type 'pattern'
-            index = source.indexOf("#type", eol) + 6;
-            eol = source.indexOf("\r\n", index);
+            index = source.indexOf(Costanti.HSTYPE, eol) + 6;
+            eol = source.indexOf(Costanti.CRNL, index);
             String secondPattern = source.substring(index, eol).trim();
 
             switch (firstPattern) {
-                case "vertex" -> vertexSource = splitString[1];
-                case "fragment" -> fragmentSource = splitString[1];
-                default -> throw new IOException("Unexpected token '" + firstPattern + "'");
+                case Costanti.VERTEX -> vertexSource = splitString[1];
+                case Costanti.FRAGMENT -> fragmentSource = splitString[1];
+                default -> throw new IOException(String.format("Unexpected token '%s'", firstPattern));
             }
 
             switch (secondPattern) {
-                case "vertex" -> vertexSource = splitString[2];
-                case "fragment" -> fragmentSource = splitString[2];
-                default -> throw new IOException("Unexpected token '" + secondPattern + "'");
+                case Costanti.VERTEX -> vertexSource = splitString[2];
+                case Costanti.FRAGMENT -> fragmentSource = splitString[2];
+                default -> throw new IOException(String.format("Unexpected token '%s'", secondPattern));
             }
         } catch (IOException e) {
-            logger.error("{}", e);
-            assert false : "Error: Could not open file for shader: '" + filepath + "'";
+            logger.error("{0}", e);
+            assert false : String.format("Error: Could not open file for shader: '%s'", filepath);
         }
     }
 
@@ -120,5 +127,12 @@ public class Shader {
 
     public void detach() {
         glUseProgram(0);
+    }
+
+    public void uploadMat4f(String varName, @NotNull Matrix4f mat4) {
+        int varLocation = glGetUniformLocation(shaderProgramID, varName);
+        FloatBuffer matBuffer = BufferUtils.createFloatBuffer(16);
+        mat4.get(matBuffer);
+        glUniformMatrix4fv(varLocation, false, matBuffer);
     }
 }
