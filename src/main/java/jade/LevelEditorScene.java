@@ -5,6 +5,7 @@ import org.lwjgl.BufferUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import renderer.Shader;
+import util.Costanti;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
@@ -45,7 +46,7 @@ public class LevelEditorScene extends Scene {
     @Override
     public void init() {
         this.camera = new Camera(new Vector2f(-200, -300));
-        defaultShader = new Shader("assets/shaders/default.glsl");
+        defaultShader = new Shader(Costanti.FILEPATH);
         defaultShader.compile();
         logger.info("camera position x={} y={}", camera.position.x, camera.position.y);
 
