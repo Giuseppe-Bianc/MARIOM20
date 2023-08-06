@@ -10,10 +10,18 @@ public class GameObject {
     private static final Logger logger = LoggerFactory.getLogger(GameObject.class);
     private String name;
     private List<Component> components;
+    public Transform transform;
 
     public GameObject(String name) {
         this.name = name;
         this.components = new ArrayList<>();
+        this.transform = new Transform();
+    }
+
+    public GameObject(String name, Transform transform) {
+        this.name = name;
+        this.components = new ArrayList<>();
+        this.transform = transform;
     }
 
     public <T extends Component> T getComponent(Class<T> componentClass) {
@@ -37,7 +45,7 @@ public class GameObject {
         for (int i = 0; i < components.size(); i++) {
             Component c = components.get(i);
             if (componentClass.isAssignableFrom(c.getClass())) {
-                components.remove(i);
+                components.remove(i);//NOSONAR
                 return;
             }
         }

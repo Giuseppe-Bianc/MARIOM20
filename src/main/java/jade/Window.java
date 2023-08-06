@@ -41,9 +41,9 @@ public class Window { // NOSONAR: java:S6548
         this.width = 1152;
         this.height = 648;
         this.title = "Mario";
-        this.r = 1;
-        this.b = 1;
-        this.g = 1;
+        this.r = 0;
+        this.b = 0;
+        this.g = 0;
         this.a = 1;
     }
 
@@ -191,6 +191,10 @@ public class Window { // NOSONAR: java:S6548
             dt = endTime - beginTime;
             beginTime = endTime;
         }
+    }
+
+    public static Scene getScene() {
+        return get().currentScene;
     }
 
     private static class WindowHolder {
