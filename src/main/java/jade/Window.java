@@ -52,10 +52,12 @@ public class Window { // NOSONAR: java:S6548
             case 0 -> {
                 currentScene = new LevelEditorScene();
                 currentScene.init();
+                currentScene.start();
             }
             case 1 -> {
                 currentScene = new LevelScene();
                 currentScene.init();
+                currentScene.start();
             }
             default -> {
                 assert false : "Unknown scene '" + newScene + "'";
