@@ -4,6 +4,7 @@ import components.SpriteRenderer;
 import jade.Window;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector4f;
+import util.AssetPool;
 import util.Costanti;
 
 import static org.lwjgl.opengl.GL15.*;
@@ -35,8 +36,7 @@ public class RenderBatch {
     private Shader shader;
 
     public RenderBatch(int maxBatchSize) {
-        this.shader = new Shader(Costanti.FILEPATHSD);
-        this.shader.compile();
+        this.shader = AssetPool.getShader(Costanti.FILEPATHSD);
         this.sprites = new SpriteRenderer[maxBatchSize];
         this.maxBatchSize = maxBatchSize;
 

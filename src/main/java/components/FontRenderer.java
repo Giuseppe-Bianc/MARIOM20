@@ -10,9 +10,7 @@ public class FontRenderer extends Component {
 
     @Override
     public void start() {
-        if (gameObject.getComponent(SpriteRenderer.class) != null) {
-            logger.info("Found Font Renderer!");
-        }
+        //epty
     }
 
     @Override

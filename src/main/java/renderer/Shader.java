@@ -28,7 +28,7 @@ public class Shader {
 
     public Shader(@NotNull String filepath) {
         this.filepath = filepath;
-        logger.info("loading file {}", filepath);
+        //logger.info("loading file {}", filepath);
         try {
             String source = Files.readString(Paths.get(filepath));
             String[] splitString = source.split(Costanti.REGEX);

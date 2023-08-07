@@ -12,7 +12,6 @@ import org.lwjgl.opengl.GL;
 import org.lwjgl.system.MemoryStack;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import util.Time;
 
 import java.nio.IntBuffer;
 import java.util.Objects;
@@ -157,7 +156,7 @@ public class Window { // NOSONAR: java:S6548
     }
 
     public void loop() {
-        float beginTime = Time.getTime();
+        float beginTime = (float) glfwGetTime();
         float endTime;
         float dt = -1.0f;
         while (!glfwWindowShouldClose(glfwWindow)) {
@@ -187,7 +186,7 @@ public class Window { // NOSONAR: java:S6548
             }
 
             glfwSwapBuffers(glfwWindow);
-            endTime = Time.getTime();
+            endTime = (float) glfwGetTime();
             dt = endTime - beginTime;
             beginTime = endTime;
         }

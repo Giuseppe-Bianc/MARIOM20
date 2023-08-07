@@ -26,7 +26,6 @@ public class KeyListener {
     }
 
     private static class KeyListenerHolder {
-
         private static final KeyListener INSTANCE = new KeyListener();
     }
 }
