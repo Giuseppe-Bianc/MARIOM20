@@ -40,9 +40,9 @@ public class Window { // NOSONAR: java:S6548
         this.width = 1152;
         this.height = 648;
         this.title = "Mario";
-        this.r = 0.7f;
-        this.b = 0.2f;
-        this.g = 0.1f;
+        this.r = 1;
+        this.b = 1;
+        this.g = 1;
         this.a = 1;
     }
 
@@ -145,10 +145,12 @@ public class Window { // NOSONAR: java:S6548
         // creates the GLCapabilities instance and makes the OpenGL
         // bindings available for use.
         GL.createCapabilities();
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
         Window.changeScene(0);
         ImGui.createContext();
         ImGuiIO io = ImGui.getIO();
-        //io.addConfigFlags(ImGuiConfigFlags.ViewportsEnable);
+        io.addConfigFlags(ImGuiConfigFlags.ViewportsEnable);
         imGuiGlfw.init(glfwWindow, true);
         imGuiGl3.init(glslVersion);
     }
