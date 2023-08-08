@@ -9,13 +9,12 @@ import util.Costanti;
 
 import java.io.IOException;
 import java.nio.FloatBuffer;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
 import static org.lwjgl.opengl.GL11.GL_FALSE;
-import static org.lwjgl.opengl.GL33.*;
-import static org.lwjgl.opengl.GL33.glGetShaderInfoLog;
+import static org.lwjgl.opengl.GL20.*;
+import static org.lwjgl.opengl.GL20.glGetShaderInfoLog;
 
 public class Shader {
     public static final Logger logger = LoggerFactory.getLogger(Shader.class);
@@ -28,7 +27,7 @@ public class Shader {
 
     public Shader(@NotNull String filepath) {
         this.filepath = filepath;
-        //logger.info("loading file {}", filepath);
+        logger.info("loading file {}", filepath);
         try {
             String source = Files.readString(Paths.get(filepath));
             String[] splitString = source.split(Costanti.REGEX);
@@ -55,8 +54,8 @@ public class Shader {
                 default -> throw new IOException(String.format("Unexpected token '%s'", secondPattern));
             }
         } catch (IOException e) {
-            logger.error(" {0}", e);
-            assert false : String.format("Error: Could not open file for shader: '%s'", filepath);
+            logger.error("An exception occurred!", e);
+            assert false : "Error: Could not open file for shader: '" + filepath + "'";
         }
     }
 
@@ -64,7 +63,8 @@ public class Shader {
         // ============================================================
         // Compile and link shaders
         // ============================================================
-        int vertexID, fragmentID;
+        int vertexID;
+        int fragmentID;
 
         // First load and compile the vertex shader
         vertexID = glCreateShader(GL_VERTEX_SHADER);
@@ -184,5 +184,11 @@ public class Shader {
         int varLocation = glGetUniformLocation(shaderProgramID, varName);
         use();
         glUniform1i(varLocation, slot);
+    }
+
+    public void uploadIntArray(String varName, int[] array) {
+        int varLocation = glGetUniformLocation(shaderProgramID, varName);
+        use();
+        glUniform1iv(varLocation, array);
     }
 }

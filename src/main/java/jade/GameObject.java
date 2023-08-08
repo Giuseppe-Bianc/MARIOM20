@@ -31,7 +31,7 @@ public class GameObject {
                     return componentClass.cast(c);
                 } catch (ClassCastException e) {
                     if (logger.isErrorEnabled()) {
-                        logger.error("{0}", e);
+                        logger.error("An exception occurred!", e);
                     }
                     assert false : "Error: Casting component.";
                 }

@@ -40,9 +40,9 @@ public class Window { // NOSONAR: java:S6548
         this.width = 1152;
         this.height = 648;
         this.title = "Mario";
-        this.r = 0;
-        this.b = 0;
-        this.g = 0;
+        this.r = 0.7f;
+        this.b = 0.2f;
+        this.g = 0.1f;
         this.a = 1;
     }
 
@@ -96,9 +96,7 @@ public class Window { // NOSONAR: java:S6548
         if (!glfwInit())
             throw new IllegalStateException("Unable to initialize GLFW");
 
-        glslVersion = "#version 330";
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+        glfwDefaultWindowHints();
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE); // the window will stay hidden after creation
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE); // the window will be resizable
 
@@ -150,7 +148,7 @@ public class Window { // NOSONAR: java:S6548
         Window.changeScene(0);
         ImGui.createContext();
         ImGuiIO io = ImGui.getIO();
-        io.addConfigFlags(ImGuiConfigFlags.ViewportsEnable);
+        //io.addConfigFlags(ImGuiConfigFlags.ViewportsEnable);
         imGuiGlfw.init(glfwWindow, true);
         imGuiGl3.init(glslVersion);
     }
